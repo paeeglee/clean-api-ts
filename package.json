@@ -4,6 +4,7 @@
   "type": "module",
   "private": true,
   "devDependencies": {
+    "@biomejs/biome": "2.2.4",
     "@types/bun": "latest"
   },
   "peerDependencies": {
@@ -11,5 +12,10 @@
   },
   "dependencies": {
     "git-commit-msg-linter": "^5.0.8"
+  },
+  "scripts": {
+    "biome:check": "bunx biome check --write",
+    "biome:lint": "bunx biome lint --write",
+    "biome:format": "bunx biome format --write"
   }
 }
