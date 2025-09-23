@@ -1,0 +1,4 @@
+{
+  "*.{js,ts,jsx,tsx}": ["bun biome:check"],
+  "*.{json,md,yml,yaml}": ["bun biome:check"]
+}

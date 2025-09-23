@@ -5,7 +5,9 @@
   "private": true,
   "devDependencies": {
     "@biomejs/biome": "2.2.4",
-    "@types/bun": "latest"
+    "@types/bun": "latest",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.2.0"
   },
   "peerDependencies": {
     "typescript": "^5"
@@ -16,6 +18,7 @@
   "scripts": {
     "biome:check": "bunx biome check --write",
     "biome:lint": "bunx biome lint --write",
-    "biome:format": "bunx biome format --write"
+    "biome:format": "bunx biome format --write",
+    "prepare": "husky"
   }
 }
