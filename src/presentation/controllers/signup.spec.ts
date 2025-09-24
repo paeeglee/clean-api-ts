@@ -1,4 +1,9 @@
 import { describe, expect, test, vi } from "vitest";
+import type { AccountModel } from "../../domain/models/add-account";
+import type {
+  AddAccount,
+  AddAccountModel,
+} from "../../domain/usecases/add-account";
 import { InvalidParamError, MissingParamError, ServerError } from "../errors";
 import type { EmailValidator } from "../protocols";
 import { SignUpController } from "./signup.controlle";
@@ -6,6 +11,7 @@ import { SignUpController } from "./signup.controlle";
 interface SutTypes {
   sut: SignUpController;
   emailValidatorStub: EmailValidator;
+  addAccountStub: AddAccount;
 }
 
 const makeEmailValidator = (): EmailValidator => {
@@ -18,11 +24,32 @@ const makeEmailValidator = (): EmailValidator => {
   return new EmailValidatorStub();
 };
 
+const makeAddAccount = (): AddAccount => {
+  class AddAccountStub implements AddAccount {
+    async add(_account: AddAccountModel): Promise<AccountModel> {
+      const fakeAccount = {
+        id: "valid_id",
+        name: "valid_name",
+        email: "valid_email@mail.com",
+        password: "valid_password",
+      };
+
+      return fakeAccount;
+    }
+  }
+
+  return new AddAccountStub();
+};
+
 const makeSut = (): SutTypes => {
   const emailValidatorStub = makeEmailValidator();
-  const signupController = new SignUpController(emailValidatorStub);
+  const addAccountStub = makeAddAccount();
+  const signupController = new SignUpController(
+    emailValidatorStub,
+    addAccountStub,
+  );
 
-  return { sut: signupController, emailValidatorStub };
+  return { sut: signupController, emailValidatorStub, addAccountStub };
 };
 
 describe("Signup Controller", () => {
@@ -101,7 +128,7 @@ describe("Signup Controller", () => {
     expect(httpResponse.body).toEqual(new InvalidParamError("email"));
   });
 
-  test("should EmailValidator with correct email", async () => {
+  test("should call EmailValidator with correct email", async () => {
     const { sut, emailValidatorStub } = makeSut();
     const isValidSpy = vi.spyOn(emailValidatorStub, "isValid");
 
@@ -152,5 +179,26 @@ describe("Signup Controller", () => {
     expect(httpResponse.body).toEqual(
       new InvalidParamError("passwordConfirmation"),
     );
+  });
+
+  test("should call AddAccount with correct values", async () => {
+    const { sut, addAccountStub } = makeSut();
+    const addSpy = vi.spyOn(addAccountStub, "add");
+
+    const httpRequest = {
+      body: {
+        name: "any_name",
+        email: "any_email@mail.com",
+        password: "any_password",
+        passwordConfirmation: "any_password",
+      },
+    };
+
+    await sut.handle(httpRequest);
+    expect(addSpy).toHaveBeenCalledWith({
+      name: "any_name",
+      email: "any_email@mail.com",
+      password: "any_password",
+    });
   });
 });
