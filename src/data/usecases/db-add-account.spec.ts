@@ -34,4 +34,19 @@ describe("Email Validator Adapter", () => {
     await sut.add(accountData);
     expect(encrypterSpy).toHaveBeenCalledWith("valid_password");
   });
+
+  test("should throw if Encrypter throws", async () => {
+    const { sut, encrypterStub } = makeSut();
+    vi.spyOn(encrypterStub, "encrypt").mockReturnValueOnce(
+      new Promise((_, reject) => reject(new Error())),
+    );
+    const accountData = {
+      name: "valid_name",
+      email: "valid_email",
+      password: "valid_password",
+    };
+
+    const promise = sut.add(accountData);
+    await expect(promise).rejects.toThrow();
+  });
 });
