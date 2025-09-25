@@ -6,7 +6,10 @@ import type {
 } from "../../domain/usecases/add-account";
 import { InvalidParamError, MissingParamError, ServerError } from "../errors";
 import type { EmailValidator } from "../protocols";
-import { SignUpController } from "./signup.controlle";
+import {
+  SignUpController,
+  type SignUpControllerInput,
+} from "./signup.controlle";
 
 interface SutTypes {
   sut: SignUpController;
@@ -60,7 +63,7 @@ describe("Signup Controller", () => {
         email: "any_email@mail.com",
         password: "any_password",
         passwordConfirmation: "any_password",
-      },
+      } as SignUpControllerInput,
     };
     const httpResponse = await sut.handle(httpRequest);
     expect(httpResponse.statusCode).toBe(400);
@@ -74,7 +77,7 @@ describe("Signup Controller", () => {
         name: "any_name",
         password: "any_password",
         passwordConfirmation: "any_password",
-      },
+      } as SignUpControllerInput,
     };
     const httpResponse = await sut.handle(httpRequest);
     expect(httpResponse.statusCode).toBe(400);
@@ -88,7 +91,7 @@ describe("Signup Controller", () => {
         name: "any_name",
         email: "any_email@mail.com",
         passwordConfirmation: "any_password",
-      },
+      } as SignUpControllerInput,
     };
     const httpResponse = await sut.handle(httpRequest);
     expect(httpResponse.statusCode).toBe(400);
@@ -102,7 +105,7 @@ describe("Signup Controller", () => {
         name: "any_name",
         email: "any_email@mail.com",
         password: "any_password",
-      },
+      } as SignUpControllerInput,
     };
     const httpResponse = await sut.handle(httpRequest);
     expect(httpResponse.statusCode).toBe(400);
