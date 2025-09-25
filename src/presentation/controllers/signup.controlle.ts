@@ -8,6 +8,13 @@ import type {
   HttpResponse,
 } from "../protocols";
 
+export interface SignUpControllerInput {
+  name: string;
+  email: string;
+  password: string;
+  passwordConfirmation: string;
+}
+
 export class SignUpController implements Controller {
   constructor(
     private readonly emailValidator: EmailValidator,
@@ -15,12 +22,7 @@ export class SignUpController implements Controller {
   ) {}
 
   async handle(
-    httpRequest: HttpRequest<{
-      name: string;
-      email: string;
-      password: string;
-      passwordConfirmation: string;
-    }>,
+    httpRequest: HttpRequest<SignUpControllerInput>,
   ): Promise<HttpResponse> {
     try {
       const requiredFields = [
@@ -30,12 +32,13 @@ export class SignUpController implements Controller {
         "passwordConfirmation",
       ];
       for (const field of requiredFields) {
-        if (!httpRequest.body?.[field]) {
+        if (!httpRequest.body?.[field as keyof SignUpControllerInput]) {
           return badRequest(new MissingParamError(field));
         }
       }
 
-      const { name, email, password, passwordConfirmation } = httpRequest.body;
+      const { name, email, password, passwordConfirmation } =
+        httpRequest.body as SignUpControllerInput;
       if (password !== passwordConfirmation) {
         return badRequest(new InvalidParamError("passwordConfirmation"));
       }
