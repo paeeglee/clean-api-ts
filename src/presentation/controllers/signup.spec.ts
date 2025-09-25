@@ -205,7 +205,7 @@ describe("Signup Controller", () => {
   test("should return 500 if AddAccount throws", async () => {
     const { sut, addAccountStub } = makeSut();
     vi.spyOn(addAccountStub, "add").mockImplementationOnce(() => {
-      throw new Error();
+      return new Promise((_, reject) => reject(new Error()));
     });
 
     const httpRequest = {
