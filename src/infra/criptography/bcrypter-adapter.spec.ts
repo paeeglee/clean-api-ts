@@ -26,4 +26,13 @@ describe("Bcrypter Adapter", () => {
     const hash = await sut.encrypt("any_value");
     expect(hash).toBe("hashed_value");
   });
+
+  it("should throws if bcrypt throws", async () => {
+    const sut = makeSut();
+    vi.spyOn(bcrypt, "hash").mockReturnValueOnce(
+      new Promise((_, reject) => reject(new Error())),
+    );
+    const promise = sut.encrypt("any_value");
+    await expect(promise).rejects.toThrow();
+  });
 });
