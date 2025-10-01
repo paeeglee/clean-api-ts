@@ -2,6 +2,8 @@ import bcrypt from "bcrypt";
 import { describe, expect, it, vi } from "vitest";
 import { BcryptAdapter } from "./bcrypter-adapter";
 
+const makeSut = (): BcryptAdapter => new BcryptAdapter(12);
+
 vi.mock("bcrypt", () => ({
   default: {
     async hash(): Promise<string> {
@@ -12,7 +14,7 @@ vi.mock("bcrypt", () => ({
 
 describe("Bcrypter Adapter", () => {
   it("should call bcrypt with correct value", async () => {
-    const sut = new BcryptAdapter(12);
+    const sut = makeSut();
     const hashSpy = vi.spyOn(bcrypt, "hash");
 
     await sut.encrypt("any_value");
@@ -20,7 +22,7 @@ describe("Bcrypter Adapter", () => {
   });
 
   it("should return a hash on success", async () => {
-    const sut = new BcryptAdapter(12);
+    const sut = makeSut();
     const hash = await sut.encrypt("any_value");
     expect(hash).toBe("hashed_value");
   });
